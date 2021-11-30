@@ -28,8 +28,15 @@ fn main() {
 
     let result = match args.value_of("command").unwrap() {
         cmd if cmd == "download" || cmd == "d" => {
-            let filename = args.value_of("file").unwrap();
-            download_input(&session_cookie, year, day, filename)
+            let filename: String =
+                args.value_of("file").unwrap_or("input").to_string();
+            download_input(
+                &session_cookie,
+                year,
+                day,
+                &day.map(|d| filename.clone() + &d.to_string())
+                    .unwrap_or(filename),
+            )
         }
         cmd if cmd == "submit" || cmd == "s" => {
             let part = args.value_of("part").unwrap();
@@ -122,8 +129,7 @@ fn parse_args() -> ArgMatches<'static> {
                 .long("file")
                 .value_name("PATH")
                 .takes_value(true)
-                .help("Path to file where to save puzzle input")
-                .default_value("input"),
+                .help("Path to file where to save puzzle input"),
         )
         .arg(
             Arg::with_name("session")
